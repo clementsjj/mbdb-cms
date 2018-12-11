@@ -51,9 +51,10 @@ export default class Home extends Component {
   //~~~~~~~~~~~~~~~~~~~~~~~~LOGIN DATA~~~~~~~~~~~~~~~~~~~~~~~~
   handleLoginData = data => {
     //console.log('From handleLoginData in Home.js: ', data);
-    this.setState({ showLogin: false, userCredentials: data }, () =>
-      console.log('Login Credentials in State: ', this.state.userCredentials)
-    );
+    this.setState({ showLogin: false, userCredentials: data }, () => {
+      //this.props.authUser = this.state.userCredentials;
+      console.log('Login Credentials in State: ', this.state.userCredentials);
+    });
   };
   //~~~~~~~~~~~~~~~~~~~~~~~~LOGIN DATA~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -61,7 +62,6 @@ export default class Home extends Component {
     this.setState({ loading: true, showAddBathroom: false });
     let localaddress = `http://localhost:3000/bathrooms/getvalidatedbathrooms`;
     let address = `https://secure-wave-30156.herokuapp.com/bathrooms/getallbathrooms`;
-
     axios
       .get(localaddress)
       .then(data => {
@@ -119,6 +119,24 @@ export default class Home extends Component {
 
   componentDidMount = () => {
     console.log('Current User Credentials: = ', this.state.userCredentials);
+
+    // Check for JWT token
+    if (localStorage.jwtToken) {
+      // Set auth token header auth
+      setAuthToken(localStorage.jwtToken);
+      // Decode token and get user info and exp
+      const decoded = jwt_decode(localStorage.jwtToken);
+      // Set user and isAuthenticated
+      this.setState({ userCredentials: decoded });
+      // Check for expired token
+      const currentTime = Date.now() / 1000;
+      if (decoded.exp < currentTime) {
+        // Remove token from localStorage
+        localStorage.removeItem('jwtToken');
+        // Remove auth header for future requests
+        setAuthToken(false);
+      }
+    }
   };
   render() {
     const { activeItem } = this.state;
@@ -126,14 +144,17 @@ export default class Home extends Component {
     return (
       <div>
         {this.state.userCredentials.username != '' && (
-          <p style={{ color: 'white' }}>
-            Logged in as {this.state.userCredentials.username}
-          </p>
-        )}
-        {this.state.userCredentials.isAdmin == true && (
-          <p style={{ color: 'white' }}>
-            <strong>Admin</strong>
-          </p>
+          <div style={{ marginLeft: 20 }}>
+            <p style={{ color: 'white' }}>
+              Logged in as {this.state.userCredentials.username}
+            </p>
+
+            {this.state.userCredentials.isAdmin == true && (
+              <p style={{ color: 'white' }}>
+                <strong>Admin</strong>
+              </p>
+            )}
+          </div>
         )}
         {this.state.userCredentials.isAdmin == false && (
           <p style={{ color: 'orange' }}>Not an Admin</p>
