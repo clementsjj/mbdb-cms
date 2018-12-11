@@ -34,7 +34,16 @@ export default class Home extends Component {
     }));
   };
 
-  handleAddCodeSubmit = () => {};
+  handleAddCodeSubmit = () => {
+    let address = `http://localhost:3000/bathrooms/addadditionalcode`;
+    let codes = this.state.codeToAdd;
+    let payload = { codes: codes, _id: this.state.editBathroom._id };
+
+    axios
+      .put(address, payload)
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
+  };
 
   handleEditButton = (e, { name, value }) => {
     // if(this.state.activeEdit == {name}){
@@ -326,6 +335,9 @@ export default class Home extends Component {
                               />
 
                               <Button
+                                disabled={
+                                  this.state.codeToAdd != '' ? false : true
+                                }
                                 size="mini"
                                 onClick={this.handleAddCodeSubmit}
                                 style={{ backgroundColor: 'yellow' }}

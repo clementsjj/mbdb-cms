@@ -232,6 +232,11 @@ export default class Home extends Component {
           )}
         </Container>
         <br />
+        <p style={{ color: 'white', marginLeft: 10 }}>
+          You do not need to be logged in to view the data.
+          <br />
+          You must be logged in as an administrator to edit the data.
+        </p>
         <Divider />
         <br />
         <Container>

@@ -106,10 +106,11 @@ class AddBathroomForm extends Component {
   handleFormSubmit(e) {
     e.preventDefault();
     let address = `https://secure-wave-30156.herokuapp.com/bathrooms/addbathroom`;
+    let addressTwo = `http://localhost:3000/bathrooms/addbathroom`;
     let bathroomToAdd = this.state.newBathroom;
 
     axios
-      .post(address, bathroomToAdd)
+      .post(addressTwo, bathroomToAdd)
       .then(res => {
         this.setState(
           {
