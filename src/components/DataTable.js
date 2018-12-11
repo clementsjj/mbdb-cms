@@ -81,6 +81,41 @@ export default class Home extends Component {
     this.setState({ activeEdit: '', editBathroom: {} });
   };
 
+  handleDeleteButton = e => {
+    console.log('Deleting ', this.state.editBathroom);
+    let address = `http://localhost:3000/bathrooms/deletebathroom`;
+    let bathroom = Object.assign({}, this.state.editBathroom);
+    let infoCopy = Object.assign([], this.state.info);
+
+    for (let i = 0; i < this.state.info.length; i++) {
+      if (bathroom._id == this.state.info[i]._id) {
+        //let bathroomToDelete = Object.assign({}, this.state.info[i]);
+        infoCopy.splice(i, 1);
+        this.setState({ info: infoCopy });
+      }
+    }
+    axios
+      .delete(address, bathroom)
+      .then(res => {
+        console.log('res - ', res);
+        console.log('Successfully Deleted');
+      })
+      .catch(err => {
+        console.log('Delete Error: ', err);
+      });
+
+    this.setState({
+      isModalShown: false,
+      status: 'Delete',
+      editBathroom: {},
+      activeEdit: ''
+    });
+
+    setTimeout(() => {
+      this.setState({ status: '' });
+    }, 2000);
+  };
+
   handleInputChange = e => {
     //e.preventDefault();
     let value = e.target.value;
@@ -136,6 +171,17 @@ export default class Home extends Component {
             }}
           >
             Successfully Submitted Updates
+          </h3>
+        )}
+        {this.state.status == 'Delete' && (
+          <h3
+            style={{
+              color: 'white',
+              backgroundColor: 'green',
+              textAlign: 'center'
+            }}
+          >
+            Successfully Deleted Record
           </h3>
         )}
         {this.state.isModalShown === true && (
@@ -223,6 +269,7 @@ export default class Home extends Component {
                           <Button
                             color="red"
                             size="mini"
+                            onClick={this.handleDeleteButton}
                             style={
                               this.state.activeEdit === bathroom.place_id
                                 ? { display: 'block' }

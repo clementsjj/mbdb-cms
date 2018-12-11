@@ -5,6 +5,7 @@ import LoginForm from './LoginForm.js';
 import loading from '../assets/images/ajax-loader.gif';
 import DataTable from './DataTable';
 import AddBathroomForm from './AddBathroomForm';
+import RegisterForm from './RegisterForm';
 import '../App.css';
 
 export default class Home extends Component {
@@ -17,10 +18,6 @@ export default class Home extends Component {
   };
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
-
-  handleLogin = () => {
-    console.log('Handle Login');
-  };
 
   handleAddBathroomButton = () => {
     if (this.state.showAddBathroom == true) {
@@ -85,11 +82,13 @@ export default class Home extends Component {
         <Container>
           {this.state.showLogin === false && this.state.showRegister === false && (
             <div>
-              <Button onClick={() => this.setState({ showLogin: true })}>
+              <Button
+                style={{ marginBottom: 2 }}
+                onClick={() => this.setState({ showLogin: true })}
+              >
                 Login...
               </Button>
-              <br />
-              <br />
+
               <Button onClick={() => this.setState({ showRegister: true })}>
                 Register...
               </Button>
@@ -98,8 +97,12 @@ export default class Home extends Component {
 
           {this.state.showLogin === true && (
             <div>
-              <LoginForm />
-              <Button onClick={this.handleLogin}>Login</Button>
+              <LoginForm
+                hide={() => {
+                  this.setState({ showLogin: false, view: 'login' });
+                  setTimeout(() => this.setState({ view: '' }), 2000);
+                }}
+              />
               <Button onClick={() => this.setState({ showLogin: false })}>
                 Cancel
               </Button>
@@ -108,14 +111,25 @@ export default class Home extends Component {
 
           {this.state.showRegister === true ? (
             <div>
-              <input placeholder="Enter Username" />
-              <br />
+              <RegisterForm
+                hide={() => {
+                  this.setState({ showRegister: false, view: 'register' });
+                  setTimeout(() => this.setState({ view: '' }), 2000);
+                }}
+              />
+
               <Button onClick={() => this.setState({ showRegister: false })}>
                 Cancel
               </Button>
             </div>
           ) : (
             ''
+          )}
+          {this.state.view == 'login' && (
+            <p style={{ color: 'orange' }}>Logging In...</p>
+          )}
+          {this.state.view === 'register' && (
+            <p style={{ color: 'green' }}>Registration Submitted</p>
           )}
         </Container>
         <br />
