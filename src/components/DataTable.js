@@ -12,7 +12,8 @@ export default class Home extends Component {
       isModalShown: false,
       editBathroom: {},
       info: [],
-      activeEdit: ''
+      activeEdit: '',
+      codeToAdd: ''
     };
     //   componentDidMount() {
     //     const { data } = this.props;
@@ -24,6 +25,17 @@ export default class Home extends Component {
     //   }
     this.handleEditButton = this.handleEditButton.bind(this);
   }
+
+  handleAddCodeInput = e => {
+    let value = e.target.value;
+    let name = e.target.name;
+    this.setState(prevState => ({
+      [name]: value
+    }));
+  };
+
+  handleAddCodeSubmit = () => {};
+
   handleEditButton = (e, { name, value }) => {
     // if(this.state.activeEdit == {name}){
     //   this.setState({activeEdit:''})
@@ -299,7 +311,29 @@ export default class Home extends Component {
                           {<input value={this.state.editBathroom.lng} />}
                         </Table.Cell>
                         <Table.Cell>
-                          {<input value={this.state.editBathroom.code} />}
+                          {
+                            <div>
+                              <input
+                                onChange={this.handleInputChange}
+                                value={this.state.editBathroom.code}
+                              />
+                              <Divider />
+
+                              <input
+                                name="codeToAdd"
+                                onChange={this.handleAddCodeInput}
+                                value={this.state.codeToAdd}
+                              />
+
+                              <Button
+                                size="mini"
+                                onClick={this.handleAddCodeSubmit}
+                                style={{ backgroundColor: 'yellow' }}
+                              >
+                                Add Code(s)
+                              </Button>
+                            </div>
+                          }
                         </Table.Cell>
                         <Table.Cell>
                           {/* {this.state.editBathroom.isPublic ? 'Yes' : 'No'} */}

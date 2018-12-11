@@ -9,7 +9,7 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { authUser: '' };
+    this.state = { authUser: null };
   }
 
   componentDidMount() {
@@ -36,17 +36,11 @@ class App extends Component {
     }
   }
 
-  setToken = () => {};
-
   render() {
-    // if (this.state.authUser === null) {
-    //   return null;
-    // }
-
     return (
       <div>
         <div className="App-header">Welcome to the MBDB CMS</div>
-        <Home authUser={this.state.authUser} />
+        <Home />
       </div>
     );
   }
