@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
 import Axios from 'axios';
+import jwt_decode from 'jwt-decode';
+import setAuthToken from '../utils/setAuthToken';
 
 import '../App.css';
 
@@ -16,13 +18,18 @@ export default class LoginForm extends Component {
     let address = `http://localhost:3000/users/login`;
     let userToLogin = Object.assign({}, this.state.userData);
     console.log('userToLogin: ', userToLogin);
-    //this.props.hide();
     this.setState({
       userData: { username: '', password: '' }
     });
     Axios.post(address, userToLogin)
       .then(res => {
-        console.log(res);
+        const { token } = res.data;
+        //console.log('Token: ', token);
+        localStorage.setItem('jwtToken', token);
+        setAuthToken(token);
+        const decoded = jwt_decode(token);
+        //console.log('Decoded Token: ', decoded);
+        this.props.onLogin(decoded);
       })
       .catch(err => console.log(err));
   };

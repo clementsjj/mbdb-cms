@@ -219,10 +219,11 @@ export default class Home extends Component {
                       {
                         <React.Fragment>
                           {/* Two Buttons, Edit and Save, only one shown at a time */}
+
                           <Button
+                            disabled={this.props.isAdmin == true ? false : true}
                             size="tiny"
                             compact
-                            // active={this.state.activeEdit === bathroom.place_id}
                             name={bathroom.place_id}
                             value={bathroom}
                             color="yellow"
@@ -235,6 +236,7 @@ export default class Home extends Component {
                           >
                             Edit
                           </Button>
+
                           <Button
                             style={
                               this.state.activeEdit === bathroom.place_id

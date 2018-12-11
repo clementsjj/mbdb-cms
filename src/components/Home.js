@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Button, Image, Container, Divider } from 'semantic-ui-react';
+import { Button, Image, Container, Divider, Segment } from 'semantic-ui-react';
 import LoginForm from './LoginForm.js';
 import loading from '../assets/images/ajax-loader.gif';
 import DataTable from './DataTable';
 import AddBathroomForm from './AddBathroomForm';
 import RegisterForm from './RegisterForm';
+import jwt_decode from 'jwt-decode';
+import setAuthToken from '../utils/setAuthToken';
 import '../App.css';
 
 export default class Home extends Component {
@@ -14,7 +16,8 @@ export default class Home extends Component {
     showLogin: false,
     showRegister: false,
     view: '',
-    showAddBathroom: false
+    showAddBathroom: false,
+    userCredentials: { username: '' }
   };
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
@@ -45,6 +48,15 @@ export default class Home extends Component {
       });
   };
 
+  //~~~~~~~~~~~~~~~~~~~~~~~~LOGIN DATA~~~~~~~~~~~~~~~~~~~~~~~~
+  handleLoginData = data => {
+    //console.log('From handleLoginData in Home.js: ', data);
+    this.setState({ showLogin: false, userCredentials: data }, () =>
+      console.log('Login Credentials in State: ', this.state.userCredentials)
+    );
+  };
+  //~~~~~~~~~~~~~~~~~~~~~~~~LOGIN DATA~~~~~~~~~~~~~~~~~~~~~~~~
+
   handleGetValidatedData = () => {
     this.setState({ loading: true, showAddBathroom: false });
     let localaddress = `http://localhost:3000/bathrooms/getvalidatedbathrooms`;
@@ -70,34 +82,100 @@ export default class Home extends Component {
       });
   };
 
+  handleGetNonValidatedData = () => {
+    this.setState({ loading: true, showAddBathroom: false });
+    let localaddress = `http://localhost:3000/bathrooms/getnonvalidatedbathrooms`;
+    let address = `https://secure-wave-30156.herokuapp.com/bathrooms/getallbathrooms`;
+
+    axios
+      .get(localaddress)
+      .then(data => {
+        console.log('NonValidatedBathrooms: ', data);
+        this.setState(
+          {
+            bathrooms: data,
+            loading: false,
+            view: 'All Validated Bathroom Data Points'
+          },
+          () => {
+            console.log('Bathrooms-in-State: ', this.state.bathrooms);
+          }
+        );
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  handleLogout = () => {
+    localStorage.removeItem('jwtToken');
+    setAuthToken(false);
+    this.setState({ userCredentials: { username: '' } });
+  };
+
   handleTest = () => {
     console.log('testing');
   };
 
+  componentDidMount = () => {
+    console.log('Current User Credentials: = ', this.state.userCredentials);
+  };
   render() {
     const { activeItem } = this.state;
 
     return (
       <div>
+        {this.state.userCredentials.username != '' && (
+          <p style={{ color: 'white' }}>
+            Logged in as {this.state.userCredentials.username}
+          </p>
+        )}
+        {this.state.userCredentials.isAdmin == true && (
+          <p style={{ color: 'white' }}>
+            <strong>Admin</strong>
+          </p>
+        )}
+        {this.state.userCredentials.isAdmin == false && (
+          <p style={{ color: 'orange' }}>Not an Admin</p>
+        )}
+
         <Container>
           {this.state.showLogin === false && this.state.showRegister === false && (
             <div>
-              <Button
-                style={{ marginBottom: 2 }}
-                onClick={() => this.setState({ showLogin: true })}
-              >
-                Login...
-              </Button>
-
+              {this.state.userCredentials.username == '' ? (
+                <Button
+                  style={{ marginBottom: 2 }}
+                  onClick={() => this.setState({ showLogin: true })}
+                >
+                  Login...
+                </Button>
+              ) : (
+                <Button
+                  style={{
+                    marginBottom: 2,
+                    backgroundColor: '#0e0487',
+                    color: 'white'
+                  }}
+                  onClick={this.handleLogout}
+                >
+                  Logout
+                </Button>
+              )}
               <Button onClick={() => this.setState({ showRegister: true })}>
                 Register...
               </Button>
             </div>
           )}
 
+          {/* ~~~~~~~~~~~~~~~~~~~~~~~~LOGIN FORM~~~~~~~~~~~~~~~~~~~~~~~~ */}
+          {/* ~~~~~~~~~~~~~~~~~~~~~~~~LOGIN FORM~~~~~~~~~~~~~~~~~~~~~~~~ */}
+          {/* ~~~~~~~~~~~~~~~~~~~~~~~~LOGIN FORM~~~~~~~~~~~~~~~~~~~~~~~~ */}
           {this.state.showLogin === true && (
             <div>
               <LoginForm
+                onLogin={data => {
+                  this.handleLoginData(data);
+                }}
                 hide={() => {
                   this.setState({ showLogin: false, view: 'login' });
                   setTimeout(() => this.setState({ view: '' }), 2000);
@@ -143,7 +221,7 @@ export default class Home extends Component {
             >
               Get Validated Bathroom Points
             </Button>
-            <Button>
+            <Button onClick={this.handleGetNonValidatedData}>
               Get <span style={{ color: 'purple' }}>Non-</span>
               Validated Bathroom Points
             </Button>
@@ -179,6 +257,7 @@ export default class Home extends Component {
             <h3 style={{ color: 'white' }}>{this.state.view}</h3>
           )}
           <DataTable
+            isAdmin={this.state.userCredentials.isAdmin}
             data={this.state.bathrooms}
             action={this.handleGetValidatedData}
           />
