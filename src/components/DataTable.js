@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DataModal from './DataModal';
-import { Button, Table, Divider } from 'semantic-ui-react';
+import { Button, Table, Divider, Icon } from 'semantic-ui-react';
 import '../App.css';
 import axios from 'axios';
 
@@ -25,6 +25,20 @@ export default class Home extends Component {
     //   }
     this.handleEditButton = this.handleEditButton.bind(this);
   }
+
+  deleteCode = (value, key) => {
+    let address = `http://localhost:3000/bathrooms/removecode`;
+    let payload = {};
+    payload._id = this.state.editBathroom._id;
+    payload.value = value;
+    payload.i = key;
+    console.log('Delete Code: ', payload);
+
+    axios
+      .put(address, payload)
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
+  };
 
   handleAddCodeInput = e => {
     let value = e.target.value;
@@ -135,6 +149,28 @@ export default class Home extends Component {
     setTimeout(() => {
       this.setState({ status: '' });
     }, 2000);
+  };
+
+  handleCodeArrayChange = e => {
+    let name = e.target.name;
+    let value = e.target.value;
+
+    console.log('Name: ', name);
+    console.log('Value: ', value);
+
+    //let otherCodesCopy = Object.assign({}, this.state.editBathroom.otherCodes);
+    let otherCodesCopy = this.state.editBathroom.otherCodes;
+    otherCodesCopy[name] = value;
+
+    this.forceUpdate();
+
+    //console.log('otherCodesCopy[name]: ', otherCodesCopy[name]);
+
+    // this.setState(prevState => ({
+    //   editBathroom: {
+    //     otherCodes: [value]
+    //   }
+    // }));
   };
 
   handleInputChange = e => {
@@ -327,13 +363,42 @@ export default class Home extends Component {
                                 value={this.state.editBathroom.code}
                               />
                               <Divider />
-
+                              Other Codes:
+                              {this.state.editBathroom.otherCodes.map(
+                                (code, i) => (
+                                  <div style={{ display: 'flex' }}>
+                                    <input
+                                      //style={{ display: 'inline-block' }}
+                                      key={i}
+                                      name={i}
+                                      onChange={this.handleCodeArrayChange}
+                                      value={
+                                        this.state.editBathroom.otherCodes[i]
+                                      }
+                                    />
+                                    <Icon
+                                      //style={{ display: 'inline-block' }}
+                                      value={
+                                        this.state.editBathroom.otherCodes[i]
+                                      }
+                                      key={i}
+                                      name="trash alternate"
+                                      onClick={this.deleteCode.bind(
+                                        this,
+                                        this.state.editBathroom.otherCodes[i],
+                                        i
+                                      )}
+                                    />
+                                  </div>
+                                )
+                              )}
+                              <Divider />
                               <input
                                 name="codeToAdd"
                                 onChange={this.handleAddCodeInput}
                                 value={this.state.codeToAdd}
+                                placeholder="Code To Add"
                               />
-
                               <Button
                                 disabled={
                                   this.state.codeToAdd != '' ? false : true
