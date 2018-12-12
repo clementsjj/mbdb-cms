@@ -311,7 +311,17 @@ class AddBathroomForm extends Component {
                     />
                     <p>What shall we name this bathroom?</p>
                   </Container>
-
+                  <br />
+                  <Container>
+                    <input
+                      placeholder="Description"
+                      style={{ margin: 5 }}
+                      name="description"
+                      value={this.state.newBathroom.description}
+                      onChange={this.handleInput.bind(this)}
+                    />
+                    <p>Enter a description, directions, whatever. Or not.</p>
+                  </Container>
                   <br />
                   <Container>
                     <input

@@ -239,7 +239,8 @@ export default class Home extends Component {
         </p>
         <Divider />
         <br />
-        <Container>
+
+        <Container style={{ width: '100vw' }}>
           <div>
             <Button
               onClick={this.handleGetValidatedData}

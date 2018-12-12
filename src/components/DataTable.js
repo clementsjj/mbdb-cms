@@ -130,7 +130,7 @@ export default class Home extends Component {
       }
     }
     axios
-      .delete(address, bathroom)
+      .put(address, bathroom)
       .then(res => {
         console.log('res - ', res);
         console.log('Successfully Deleted');
@@ -209,7 +209,15 @@ export default class Home extends Component {
     // };
     // console.log('this.state.info: ', this.state.info);
     return (
-      <div>
+      <div
+        style={{
+          overflowX: 'scroll',
+          width: '100vw'
+          // margin: 0,
+          // padding: 0,
+          // border: '1px solid deeppink'
+        }}
+      >
         {this.state.activeEdit !== '' && (
           <p style={{ color: 'red' }}>
             <span>
@@ -248,11 +256,12 @@ export default class Home extends Component {
         {this.state.info.length < 1 ? (
           ''
         ) : (
-          <Table celled>
+          <Table celled collapsing>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>&nbsp;</Table.HeaderCell>
                 <Table.HeaderCell>Name</Table.HeaderCell>
+                <Table.HeaderCell>Description</Table.HeaderCell>
                 <Table.HeaderCell>Lat</Table.HeaderCell>
                 <Table.HeaderCell>Lng</Table.HeaderCell>
                 <Table.HeaderCell>Code</Table.HeaderCell>
@@ -261,6 +270,7 @@ export default class Home extends Component {
                 <Table.HeaderCell>isValidated?</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
+
             <Table.Body>
               {this.state.info.map((bathroom, i) => {
                 return (
@@ -347,6 +357,13 @@ export default class Home extends Component {
                             name="name"
                             onChange={this.handleInputChange}
                             value={this.state.editBathroom.name}
+                          />
+                        </Table.Cell>
+                        <Table.Cell>
+                          <input
+                            name="description"
+                            onChange={this.handleInputChange}
+                            value={this.state.editBathroom.description}
                           />
                         </Table.Cell>
                         <Table.Cell>
@@ -467,9 +484,22 @@ export default class Home extends Component {
                     ) : (
                       <React.Fragment>
                         <Table.Cell>{bathroom.name}</Table.Cell>
+                        <Table.Cell>
+                          {bathroom.description
+                            ? bathroom.description
+                            : 'None.'}
+                        </Table.Cell>
                         <Table.Cell>{bathroom.lat}</Table.Cell>
                         <Table.Cell>{bathroom.lng}</Table.Cell>
-                        <Table.Cell>{bathroom.code}</Table.Cell>
+                        <Table.Cell>
+                          {bathroom.code}
+                          <Divider />
+                          {bathroom.otherCodes.length >= 1 && 'Other Codes:'}
+                          {bathroom.otherCodes &&
+                            bathroom.otherCodes.map((code, i) => (
+                              <p key={i}>{code}</p>
+                            ))}
+                        </Table.Cell>
                         <Table.Cell>
                           {bathroom.isPublic ? 'Yes' : 'No'}
                         </Table.Cell>
