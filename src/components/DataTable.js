@@ -425,8 +425,14 @@ export default class Home extends Component {
                                 onChange={this.handleInputChange}
                                 value={this.state.editBathroom.code}
                               />
-                              <Divider />
-                              Other Codes:
+                              {this.state.editBathroom.otherCodes.length >=
+                                1 && (
+                                <div>
+                                  <Divider />
+                                  Other Codes:
+                                </div>
+                              )}
+
                               {this.state.editBathroom.otherCodes.map(
                                 (code, i) => {
                                   let key = `${code}-${i}`;

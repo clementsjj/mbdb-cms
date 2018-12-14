@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Home from './components/Home';
 import './App.css';
-import jwt_decode from 'jwt-decode';
-import setAuthToken from './utils/setAuthToken';
+//import jwt_decode from 'jwt-decode';
+//import setAuthToken from './utils/setAuthToken';
 
 class App extends Component {
   //check if Jwt exist if it does set the current user state and pass it as props
