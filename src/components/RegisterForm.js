@@ -30,7 +30,7 @@ export default class RegisterForm extends Component {
 
   handleRegister = () => {
     console.log('Submitting new User: ', this.state.userData);
-    let address = `http://localhost:3000/users/register`;
+    let address = `https://mbdb-node.herokuapp.com/users/register`;
     let userToAdd = this.state.userData;
     this.props.hide();
     this.setState({

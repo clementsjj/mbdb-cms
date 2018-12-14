@@ -13,7 +13,8 @@ export default class Home extends Component {
       editBathroom: {},
       info: [],
       activeEdit: '',
-      codeToAdd: ''
+      codeToAdd: '',
+      codeSubmitStatus: ''
     };
     //   componentDidMount() {
     //     const { data } = this.props;
@@ -27,7 +28,7 @@ export default class Home extends Component {
   }
 
   deleteCode = (value, key) => {
-    let address = `http://localhost:3000/bathrooms/removecode`;
+    let address = `https://mbdb-node.herokuapp.com/bathrooms/removecode`;
     let payload = {};
     payload._id = this.state.editBathroom._id;
     payload.value = value;
@@ -36,7 +37,23 @@ export default class Home extends Component {
 
     axios
       .put(address, payload)
-      .then(res => console.log(res))
+      .then(res => {
+        let newCodeArrayCopy = [...this.state.editBathroom.otherCodes];
+        let index = newCodeArrayCopy.indexOf(value);
+
+        if (index !== -1) {
+          newCodeArrayCopy.splice(index, 1);
+          this.setState({
+            editBathroom: {
+              otherCodes: newCodeArrayCopy
+            }
+          });
+        }
+
+        this.setState({ codeSubmitStatus: 'Code Successfully Deleted' });
+        setTimeout(() => this.setState({ codeSubmitStatus: '' }), 1500);
+        console.log(res);
+      })
       .catch(err => console.log(err));
   };
 
@@ -49,14 +66,31 @@ export default class Home extends Component {
   };
 
   handleAddCodeSubmit = () => {
-    let address = `http://localhost:3000/bathrooms/addadditionalcode`;
+    let address = `https://mbdb-node.herokuapp.com/bathrooms/addadditionalcode`;
     let codes = this.state.codeToAdd;
     let payload = { codes: codes, _id: this.state.editBathroom._id };
 
     axios
       .put(address, payload)
-      .then(res => console.log(res))
+      .then(res => {
+        this.setState({ codeSubmitStatus: 'Code Successfully Submitted' });
+
+        setTimeout(() => this.setState({ codeSubmitStatus: '' }), 1500);
+
+        this.setState(prevState => ({
+          editBathroom: {
+            otherCodes: [...prevState.editBathroom.otherCodes, codes]
+          }
+        }));
+
+        //this.forceUpdate();
+        //console.log(newBathroomCodesArray);
+        console.log(res);
+      })
       .catch(err => console.log(err));
+
+    this.setState({ codeToAdd: '' });
+    this.forceUpdate();
   };
 
   handleEditButton = (e, { name, value }) => {
@@ -64,7 +98,7 @@ export default class Home extends Component {
     //   this.setState({activeEdit:''})
     // }
 
-    if (this.state.activeEdit == name) {
+    if (this.state.activeEdit === name) {
       this.setState({ activeEdit: '' });
     }
     if (this.state.activeEdit !== name) {
@@ -77,13 +111,13 @@ export default class Home extends Component {
   };
 
   handleSaveButton = e => {
-    let address = `http://localhost:3000/bathrooms/editbathroom`;
+    let address = `https://mbdb-node.herokuapp.com/bathrooms/editbathroom`;
     let bathroom = Object.assign({}, this.state.editBathroom);
     console.log('~~Save Clicked~~ --New Value----Send to DB-- ', bathroom);
     let infoCopy = Object.assign([], this.state.info);
 
     for (let i = 0; i < this.state.info.length; i++) {
-      if (bathroom._id == this.state.info[i]._id) {
+      if (bathroom._id === this.state.info[i]._id) {
         let bathroomToChange = Object.assign({}, this.state.info[i]);
         infoCopy.splice(i, 1, bathroom);
         this.setState({ info: infoCopy });
@@ -118,12 +152,12 @@ export default class Home extends Component {
 
   handleDeleteButton = e => {
     console.log('Deleting ', this.state.editBathroom);
-    let address = `http://localhost:3000/bathrooms/deletebathroom`;
+    let address = `https://mbdb-node.herokuapp.com/bathrooms/deletebathroom`;
     let bathroom = Object.assign({}, this.state.editBathroom);
     let infoCopy = Object.assign([], this.state.info);
 
     for (let i = 0; i < this.state.info.length; i++) {
-      if (bathroom._id == this.state.info[i]._id) {
+      if (bathroom._id === this.state.info[i]._id) {
         //let bathroomToDelete = Object.assign({}, this.state.info[i]);
         infoCopy.splice(i, 1);
         this.setState({ info: infoCopy });
@@ -162,7 +196,7 @@ export default class Home extends Component {
     let otherCodesCopy = this.state.editBathroom.otherCodes;
     otherCodesCopy[name] = value;
 
-    this.forceUpdate();
+    //this.forceUpdate();
 
     //console.log('otherCodesCopy[name]: ', otherCodesCopy[name]);
 
@@ -227,7 +261,7 @@ export default class Home extends Component {
             changes by default
           </p>
         )}
-        {this.state.status == 'Submit' && (
+        {this.state.status === 'Submit' && (
           <h3
             style={{
               color: 'white',
@@ -238,7 +272,7 @@ export default class Home extends Component {
             Successfully Submitted Updates
           </h3>
         )}
-        {this.state.status == 'Delete' && (
+        {this.state.status === 'Delete' && (
           <h3
             style={{
               color: 'white',
@@ -288,7 +322,9 @@ export default class Home extends Component {
                           {/* Two Buttons, Edit and Save, only one shown at a time */}
 
                           <Button
-                            disabled={this.props.isAdmin == true ? false : true}
+                            disabled={
+                              this.props.isAdmin === true ? false : true
+                            }
                             size="tiny"
                             compact
                             name={bathroom.place_id}
@@ -367,10 +403,20 @@ export default class Home extends Component {
                           />
                         </Table.Cell>
                         <Table.Cell>
-                          {<input value={this.state.editBathroom.lat} />}
+                          {
+                            <input
+                              readOnly
+                              value={this.state.editBathroom.lat}
+                            />
+                          }
                         </Table.Cell>
                         <Table.Cell>
-                          {<input value={this.state.editBathroom.lng} />}
+                          {
+                            <input
+                              readOnly
+                              value={this.state.editBathroom.lng}
+                            />
+                          }
                         </Table.Cell>
                         <Table.Cell>
                           {
@@ -382,34 +428,43 @@ export default class Home extends Component {
                               <Divider />
                               Other Codes:
                               {this.state.editBathroom.otherCodes.map(
-                                (code, i) => (
-                                  <div style={{ display: 'flex' }}>
-                                    <input
-                                      //style={{ display: 'inline-block' }}
-                                      key={i}
-                                      name={i}
-                                      onChange={this.handleCodeArrayChange}
-                                      value={
-                                        this.state.editBathroom.otherCodes[i]
-                                      }
-                                    />
-                                    <Icon
-                                      //style={{ display: 'inline-block' }}
-                                      value={
-                                        this.state.editBathroom.otherCodes[i]
-                                      }
-                                      key={i}
-                                      name="trash alternate"
-                                      onClick={this.deleteCode.bind(
-                                        this,
-                                        this.state.editBathroom.otherCodes[i],
-                                        i
-                                      )}
-                                    />
-                                  </div>
-                                )
+                                (code, i) => {
+                                  let key = `${code}-${i}`;
+                                  let key2 = `${i}-${code}`;
+
+                                  console.log('Key for code: ', key);
+                                  return (
+                                    <div style={{ display: 'flex' }} key={key}>
+                                      <input
+                                        //style={{ display: 'inline-block' }}
+                                        //key={key2}
+                                        name={i}
+                                        onChange={this.handleCodeArrayChange}
+                                        value={
+                                          this.state.editBathroom.otherCodes[i]
+                                        }
+                                      />
+                                      <Icon
+                                        //style={{ display: 'inline-block' }}
+                                        value={
+                                          this.state.editBathroom.otherCodes[i]
+                                        }
+                                        // key={i}
+                                        name="trash alternate"
+                                        onClick={this.deleteCode.bind(
+                                          this,
+                                          this.state.editBathroom.otherCodes[i],
+                                          i
+                                        )}
+                                      />
+                                    </div>
+                                  );
+                                }
                               )}
                               <Divider />
+                              <p style={{ color: 'green' }}>
+                                {this.state.codeSubmitStatus}
+                              </p>
                               <input
                                 name="codeToAdd"
                                 onChange={this.handleAddCodeInput}
@@ -418,7 +473,7 @@ export default class Home extends Component {
                               />
                               <Button
                                 disabled={
-                                  this.state.codeToAdd != '' ? false : true
+                                  this.state.codeToAdd !== '' ? false : true
                                 }
                                 size="mini"
                                 onClick={this.handleAddCodeSubmit}
@@ -433,11 +488,18 @@ export default class Home extends Component {
                           {/* {this.state.editBathroom.isPublic ? 'Yes' : 'No'} */}
                         </Table.Cell>
                         <Table.Cell>
-                          {<input value={this.state.editBathroom.quality} />}
+                          {
+                            <input
+                              name="quality"
+                              onChange={this.handleInputChange}
+                              value={this.state.editBathroom.quality}
+                            />
+                          }
                         </Table.Cell>
 
                         <Table.Cell>
-                          <form onChange={this.handleInputChange} focused>
+                          <form onChange={this.handleInputChange}>
+                            o
                             <input
                               type="radio"
                               defaultValue={true}

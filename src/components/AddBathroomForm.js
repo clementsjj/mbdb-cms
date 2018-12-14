@@ -12,8 +12,8 @@ import {
 import axios from 'axios';
 import loading from '../assets/images/ajax-loader.gif';
 
-const apikey = 'AIzaSyAbFlH5i12gn57-9R-1sKrZA9z_ojn1lwA';
-let placesToMap = null;
+//const apikey = 'AIzaSyAbFlH5i12gn57-9R-1sKrZA9z_ojn1lwA';
+//let placesToMap = null;
 
 class AddBathroomForm extends Component {
   constructor(props) {
@@ -105,12 +105,12 @@ class AddBathroomForm extends Component {
 
   handleFormSubmit(e) {
     e.preventDefault();
-    let address = `https://secure-wave-30156.herokuapp.com/bathrooms/addbathroom`;
-    let addressTwo = `http://localhost:3000/bathrooms/addbathroom`;
+    let address = `https://mbdb-node.herokuapp.com/bathrooms/addbathroom`;
+    //let addressTwo = `http://localhost:3000/bathrooms/addbathroom`;
     let bathroomToAdd = this.state.newBathroom;
 
     axios
-      .post(addressTwo, bathroomToAdd)
+      .post(address, bathroomToAdd)
       .then(res => {
         this.setState(
           {
@@ -234,7 +234,7 @@ class AddBathroomForm extends Component {
                     </div>
                   )}
 
-                  {this.state.status == 'success' && (
+                  {this.state.status === 'success' && (
                     <div
                       style={{ textAlign: 'center', backgroundColor: 'green' }}
                     >
@@ -250,7 +250,7 @@ class AddBathroomForm extends Component {
                     </div>
                   )}
 
-                  {this.state.status == 'failure' && (
+                  {this.state.status === 'failure' && (
                     <div
                       style={{ textAlign: 'center', backgroundColor: 'red' }}
                     >

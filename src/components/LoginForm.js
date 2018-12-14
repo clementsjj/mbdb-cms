@@ -15,16 +15,17 @@ export default class LoginForm extends Component {
   };
 
   handleLogin = () => {
-    let address = `http://localhost:3000/users/login`;
+    let address1 = 'http://localhost:3000/users/login';
+    let address = `https://mbdb-node.herokuapp.com/users/login`;
     let userToLogin = Object.assign({}, this.state.userData);
-    console.log('userToLogin: ', userToLogin);
+    //console.log('userToLogin: ', userToLogin);
     this.setState({
       userData: { username: '', password: '' }
     });
     Axios.post(address, userToLogin)
       .then(res => {
         const { token } = res.data;
-        //console.log('Token: ', token);
+        console.log('Token: ', token);
         localStorage.setItem('jwtToken', token);
         setAuthToken(token);
         const decoded = jwt_decode(token);

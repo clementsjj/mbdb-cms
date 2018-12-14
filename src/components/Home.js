@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Button, Image, Container, Divider, Segment } from 'semantic-ui-react';
+import { Button, Image, Container, Divider } from 'semantic-ui-react';
 import LoginForm from './LoginForm.js';
 import loading from '../assets/images/ajax-loader.gif';
 import DataTable from './DataTable';
@@ -23,7 +23,7 @@ export default class Home extends Component {
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
   handleAddBathroomButton = () => {
-    if (this.state.showAddBathroom == true) {
+    if (this.state.showAddBathroom === true) {
       this.setState({ showAddBathroom: false });
     } else {
       this.setState({ showAddBathroom: true });
@@ -32,7 +32,7 @@ export default class Home extends Component {
 
   handleGetAllData = () => {
     this.setState({ loading: true, showAddBathroom: false });
-    let localaddress = `http://localhost:3000/bathrooms/getallbathrooms`;
+    let localaddress = `https://mbdb-node.herokuapp.com/bathrooms/getallbathrooms`;
 
     axios
       .get(localaddress)
@@ -60,10 +60,10 @@ export default class Home extends Component {
 
   handleGetValidatedData = () => {
     this.setState({ loading: true, showAddBathroom: false });
-    let localaddress = `http://localhost:3000/bathrooms/getvalidatedbathrooms`;
-    let address = `https://secure-wave-30156.herokuapp.com/bathrooms/getallbathrooms`;
+    //let localaddress = `http://localhost:3000/bathrooms/getvalidatedbathrooms`;
+    let address = `https://mbdb-node.herokuapp.com/bathrooms/getallbathrooms`;
     axios
-      .get(localaddress)
+      .get(address)
       .then(data => {
         console.log('ValidatedBathrooms: ', data);
         this.setState(
@@ -84,11 +84,11 @@ export default class Home extends Component {
 
   handleGetNonValidatedData = () => {
     this.setState({ loading: true, showAddBathroom: false });
-    let localaddress = `http://localhost:3000/bathrooms/getnonvalidatedbathrooms`;
-    let address = `https://secure-wave-30156.herokuapp.com/bathrooms/getallbathrooms`;
+    //let localaddress = `http://localhost:3000/bathrooms/getnonvalidatedbathrooms`;
+    let address = `hhttps://mbdb-node.herokuapp.com/bathrooms/getallbathrooms`;
 
     axios
-      .get(localaddress)
+      .get(address)
       .then(data => {
         console.log('NonValidatedBathrooms: ', data);
         this.setState(
@@ -119,15 +119,23 @@ export default class Home extends Component {
 
   componentDidMount = () => {
     console.log('Current User Credentials: = ', this.state.userCredentials);
-
+    if (localStorage.jwtToken === undefined) {
+      localStorage.removeItem('jwtToken');
+    }
     // Check for JWT token
     if (localStorage.jwtToken) {
       // Set auth token header auth
       setAuthToken(localStorage.jwtToken);
       // Decode token and get user info and exp
+
       const decoded = jwt_decode(localStorage.jwtToken);
+
       // Set user and isAuthenticated
-      this.setState({ userCredentials: decoded });
+      if (decoded) {
+        this.setState({ userCredentials: decoded }, () =>
+          console.log('New User Credentials: ', this.state.userCredentials)
+        );
+      }
       // Check for expired token
       const currentTime = Date.now() / 1000;
       if (decoded.exp < currentTime) {
@@ -143,27 +151,27 @@ export default class Home extends Component {
 
     return (
       <div>
-        {this.state.userCredentials.username != '' && (
+        {this.state.userCredentials.username !== '' && (
           <div style={{ marginLeft: 20 }}>
             <p style={{ color: 'white' }}>
               Logged in as {this.state.userCredentials.username}
             </p>
 
-            {this.state.userCredentials.isAdmin == true && (
+            {this.state.userCredentials.isAdmin === true && (
               <p style={{ color: 'white' }}>
                 <strong>Admin</strong>
               </p>
             )}
           </div>
         )}
-        {this.state.userCredentials.isAdmin == false && (
+        {this.state.userCredentials.isAdmin === false && (
           <p style={{ color: 'orange' }}>Not an Admin</p>
         )}
 
         <Container>
           {this.state.showLogin === false && this.state.showRegister === false && (
             <div>
-              {this.state.userCredentials.username == '' ? (
+              {this.state.userCredentials.username === '' ? (
                 <Button
                   style={{ marginBottom: 2 }}
                   onClick={() => this.setState({ showLogin: true })}
@@ -224,7 +232,7 @@ export default class Home extends Component {
           ) : (
             ''
           )}
-          {this.state.view == 'login' && (
+          {this.state.view === 'login' && (
             <p style={{ color: 'orange' }}>Logging In...</p>
           )}
           {this.state.view === 'register' && (
@@ -274,7 +282,7 @@ export default class Home extends Component {
             </div>
           )}
           <br />
-          {this.state.showAddBathroom != false && (
+          {this.state.showAddBathroom !== false && (
             <div>
               <br />
               <AddBathroomForm />
