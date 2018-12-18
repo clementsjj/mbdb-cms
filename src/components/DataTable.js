@@ -148,6 +148,7 @@ export default class Home extends Component {
 
   handleDeleteButton = e => {
     console.log('Deleting ', this.state.editBathroom);
+
     let address = `https://mbdb-node.herokuapp.com/bathrooms/deletebathroom`;
     let bathroom = Object.assign({}, this.state.editBathroom);
     let infoCopy = Object.assign([], this.state.info);
@@ -344,7 +345,6 @@ export default class Home extends Component {
                       {
                         <React.Fragment>
                           {/* Two Buttons, Edit and Save, only one shown at a time */}
-
                           <Button
                             disabled={
                               this.props.isAdmin === true ? false : true
@@ -363,7 +363,6 @@ export default class Home extends Component {
                           >
                             Edit
                           </Button>
-
                           <Button
                             style={
                               this.state.activeEdit === bathroom.place_id
@@ -395,10 +394,28 @@ export default class Home extends Component {
                                 : { display: 'none' }
                             }
                           />
+                          {/* <div
+                            className="delete-button"
+                            onClick={() => {
+                              if (
+                                window.confirm(
+                                  'Are you sure you wish to delete this item?'
+                                )
+                              )
+                                this.onCancel(item);
+                            }} */}
+                          />
                           <Button
                             color="red"
                             size="mini"
-                            onClick={this.handleDeleteButton}
+                            onClick={() => {
+                              let confirmation = window.confirm(
+                                'Are you sure you want to delete this bathroom?\nClick OK to Confirm'
+                              );
+                              if (confirmation === true) {
+                                this.handleDeleteButton();
+                              }
+                            }}
                             style={
                               this.state.activeEdit === bathroom.place_id
                                 ? { display: 'block' }
