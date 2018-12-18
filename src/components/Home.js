@@ -88,7 +88,12 @@ export default class Home extends Component {
     let address = `hhttps://mbdb-node.herokuapp.com/bathrooms/getnonvalidatedbathrooms`;
 
     axios
-      .get(address)
+      .get(address, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        }
+      })
       .then(data => {
         console.log('NonValidatedBathrooms: ', data);
         this.setState(

@@ -404,7 +404,7 @@ export default class Home extends Component {
                               )
                                 this.onCancel(item);
                             }} */}
-                          />
+
                           <Button
                             color="red"
                             size="mini"
