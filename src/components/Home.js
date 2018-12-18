@@ -85,7 +85,7 @@ export default class Home extends Component {
   handleGetNonValidatedData = () => {
     this.setState({ loading: true, showAddBathroom: false });
     //let localaddress = `http://localhost:3000/bathrooms/getnonvalidatedbathrooms`;
-    let address = `hhttps://mbdb-node.herokuapp.com/bathrooms/getallbathrooms`;
+    let address = `hhttps://mbdb-node.herokuapp.com/bathrooms/getnonvalidatedbathrooms`;
 
     axios
       .get(address)
